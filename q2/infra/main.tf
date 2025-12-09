@@ -9,6 +9,9 @@ data "aws_kms_key" "polystudent-kms" {
 resource "aws_s3_bucket" "polystudent-s3" {
   bucket = var.s3_bucket_name
   acl    = "private"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
