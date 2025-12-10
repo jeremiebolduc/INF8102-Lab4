@@ -5,14 +5,36 @@ provider "aws" {
 data "terraform_remote_state" "q1" {
   backend = "local"
   config = {
-    path = "../../q1/terraform.tfstate"
+    path = "../../../q1/infra/terraform.tfstate"
   }
 }
 
-# IAM Instance Profile for LabRole
+data "aws_iam_policy_document" "ec2_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "labrole" {
+  name               = "LabRole"
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch" {
+  role       = aws_iam_role.labrole.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
 resource "aws_iam_instance_profile" "lab_instance_profile" {
   name = "${var.project}-labrole-instance-profile"
-  role = data.aws_iam_role.labrole.name
+  role = aws_iam_role.labrole.name
 }
 
 # AMI
@@ -38,7 +60,7 @@ resource "aws_instance" "public_az1" {
   subnet_id                   = data.terraform_remote_state.q1.outputs.public_subnets[0]
   vpc_security_group_ids      = [data.terraform_remote_state.q1.outputs.security_group_id]
   associate_public_ip_address = true
-  key_name                    = var.key_name
+  # key_name                    = var.key_name
   iam_instance_profile        = aws_iam_instance_profile.lab_instance_profile.name
 
   tags = {
@@ -53,7 +75,7 @@ resource "aws_instance" "public_az2" {
   subnet_id                   = data.terraform_remote_state.q1.outputs.public_subnets[1]
   vpc_security_group_ids      = [data.terraform_remote_state.q1.outputs.security_group_id]
   associate_public_ip_address = true
-  key_name                    = var.key_name
+  # key_name                    = var.key_name
   iam_instance_profile        = aws_iam_instance_profile.lab_instance_profile.name
 
   tags = {
@@ -67,7 +89,7 @@ resource "aws_instance" "private_az1" {
   instance_type          = var.instance_type
   subnet_id              = data.terraform_remote_state.q1.outputs.private_subnets[0]
   vpc_security_group_ids = [data.terraform_remote_state.q1.outputs.security_group_id]
-  key_name               = var.key_name
+  # key_name               = var.key_name
   iam_instance_profile   = aws_iam_instance_profile.lab_instance_profile.name
 
   tags = {
@@ -81,7 +103,7 @@ resource "aws_instance" "private_az2" {
   instance_type          = var.instance_type
   subnet_id              = data.terraform_remote_state.q1.outputs.private_subnets[1]
   vpc_security_group_ids = [data.terraform_remote_state.q1.outputs.security_group_id]
-  key_name               = var.key_name
+  # key_name               = var.key_name
   iam_instance_profile   = aws_iam_instance_profile.lab_instance_profile.name
 
   tags = {

@@ -6,6 +6,6 @@ variable "instance_type" {
   default = "t2.micro"
 }
 
-variable "key_name" {
-  default = "polystudent-keypair"
-}
+# variable "key_name" {
+#   default = "polystudent-keypair"
+# }
