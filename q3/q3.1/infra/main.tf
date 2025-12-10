@@ -21,23 +21,57 @@ data "aws_caller_identity" "current" {}
 # IAM policy to grant access to S3 bucket
 data "aws_iam_policy_document" "vpc_flow_logs" {
   statement {
-    sid = "AllowVPCFlowLogsWrite"
+    sid    = "AWSLogDeliveryAclCheck"
+    effect = "Allow"
 
     principals {
       type        = "Service"
-      identifiers = ["vpc-flow-logs.amazonaws.com"]
+      identifiers = ["delivery.logs.amazonaws.com"]
     }
 
-    actions = ["s3:PutObject"]
+    actions = [
+      "s3:GetBucketAcl",
+      "s3:ListBucket",
+    ]
 
     resources = [
-      "${data.terraform_remote_state.q2.outputs.s3_bucket_arn}/*"
+      data.terraform_remote_state.q2.outputs.s3_bucket_arn,
     ]
 
     condition {
       test     = "StringEquals"
       variable = "aws:SourceAccount"
       values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+
+  statement {
+    sid    = "AWSLogDeliveryWrite"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    resources = [
+      "${data.terraform_remote_state.q2.outputs.s3_bucket_arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
     }
   }
 }

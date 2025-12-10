@@ -28,10 +28,35 @@ data "aws_iam_policy_document" "kms" {
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
-      "kms:GenerateDataKey"
+      "kms:GenerateDataKey",
     ]
 
     resources = ["*"]
+  }
+
+  statement {
+    sid = "AllowLogsDeliveryToUseKey"
+
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+    ]
+
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
   }
 }
 
@@ -53,6 +78,14 @@ resource "aws_s3_bucket" "polystudent_s3" {
 
   lifecycle {
     prevent_destroy = true
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "this" {
+  bucket = aws_s3_bucket.polystudent_s3.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
   }
 }
 
