@@ -1,0 +1,120 @@
+{
+  "Description": "Security groups provide stateful filtering of ingress and egress network traffic to AWS\nresources. It is recommended that no security group allows unrestricted ingress access to\nremote server administration ports, such as SSH to port 22 and RDP to port 3389.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Security groups provide stateful filtering of ingress and egress network traffic to AWS\nresources. It is recommended that no security group allows unrestricted ingress access to\nremote server administration ports, such as SSH to port 22 and RDP to port 3389.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "You should limit the provision of public IP addresses for resources. Resources should not be exposed on the public internet, but should have access limited to consumers required for the function of your application.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "You should limit the provision of public IP addresses for resources. Resources should not be exposed on the public internet, but should have access limited to consumers required for the function of your application.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.\n\nBy default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.\n\nTo fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.\n\nBy default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.\n\nTo fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.\n\nBy default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.\n\nTo fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.\n\nBy default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.\n\nTo fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Block devices should be encrypted to ensure sensitive data is held securely at rest.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Block devices should be encrypted to ensure sensitive data is held securely at rest.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Block devices should be encrypted to ensure sensitive data is held securely at rest.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Block devices should be encrypted to ensure sensitive data is held securely at rest.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Using AWS managed keys does not allow for fine grained control.  Using Customer managed keys provides comprehensive control over cryptographic keys, enabling management of policies, permissions, and rotation, thus enhancing security and compliance measures for sensitive data and systems.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Illicit activity could be removed from the logs. Log validation should be activated on Cloudtrail logs to prevent the tampering of the underlying data in the S3 bucket. It is feasible that a rogue actor compromising an AWS account might want to modify the log data to remove trace of their actions.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 buckets should block public ACLs on buckets and any objects they contain. By blocking, PUTs with fail if the object has any public ACL a.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 bucket policy should have block public policy to prevent users from putting a policy that enable public access.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 buckets should ignore public ACLs on buckets and any objects they contain. By ignoring rather than blocking, PUT calls with public ACLs will still be applied but the ACL will be ignored.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 buckets should restrict public policies for the bucket. By enabling, the restrict_public_buckets, only the bucket owner and AWS Services can access if it has a public policy.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 buckets should block public ACLs on buckets and any objects they contain. By blocking, PUTs with fail if the object has any public ACL a.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 bucket policy should have block public policy to prevent users from putting a policy that enable public access.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 buckets should ignore public ACLs on buckets and any objects they contain. By ignoring rather than blocking, PUT calls with public ACLs will still be applied but the ACL will be ignored.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
+{
+  "Description": "S3 buckets should restrict public policies for the bucket. By enabling, the restrict_public_buckets, only the bucket owner and AWS Services can access if it has a public policy.\n",
+  "Severity": "HIGH",
+  "CVSSv3": null
+}
