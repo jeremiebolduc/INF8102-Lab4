@@ -78,12 +78,13 @@ data "aws_iam_policy_document" "vpc_flow_logs" {
   }
 }
 
+# Attaches policy to S3 bucket
 resource "aws_s3_bucket_policy" "vpc_flow_logs" {
   bucket = data.terraform_remote_state.q2.outputs.s3_bucket_name
   policy = data.aws_iam_policy_document.vpc_flow_logs.json
 }
 
-# VPC Flow Logs (rejected packets => S3)
+# VPC Flow Logs (rejected packets go to S3 bucket)
 resource "aws_flow_log" "vpc_rejected" {
   log_destination_type = "s3"
   log_destination      = data.terraform_remote_state.q2.outputs.s3_bucket_arn

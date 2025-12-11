@@ -17,6 +17,8 @@ data "aws_iam_policy_document" "kms" {
     resources = ["*"]
   }
 
+
+  # Allow S3 to use the key for KMS bucket encryption
   statement {
     sid = "AllowS3UseOfKey"
 
@@ -34,6 +36,7 @@ data "aws_iam_policy_document" "kms" {
     resources = ["*"]
   }
 
+  # Allows AWS Logs Delivery
   statement {
     sid = "AllowLogsDeliveryToUseKey"
 
@@ -60,6 +63,7 @@ data "aws_iam_policy_document" "kms" {
   }
 }
 
+# KMS key to use for the S3 bucket
 resource "aws_kms_key" "polystudent_kms" {
   description             = "KMS key for polystudent S3 bucket"
   enable_key_rotation     = true
@@ -81,14 +85,16 @@ resource "aws_s3_bucket" "polystudent_s3" {
   }
 }
 
+# This for VPC Flow Logs to avoid ACL issues
 resource "aws_s3_bucket_ownership_controls" "this" {
   bucket = aws_s3_bucket.polystudent_s3.id
 
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerPreferred" # ensures bucket owner becomes object owner
   }
 }
 
+# Ensures no public access is allowed to the bucket
 resource "aws_s3_bucket_public_access_block" "this" {
   bucket = aws_s3_bucket.polystudent_s3.id
 
@@ -114,6 +120,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   }
 }
 
+# Enables bucket versioning for accidental overwrites or deletes
 resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.polystudent_s3.id
 
