@@ -57,14 +57,14 @@ resource "aws_cloudtrail" "s3_log_activities" {
   s3_bucket_name = aws_s3_bucket.cloudtrail_bucket.id
   
   depends_on = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
-  
+
   event_selector {
     read_write_type = "WriteOnly"
     include_management_events = false
 
     data_resource {
       type   = "AWS::S3::Object"
-      values = ["${data.terraform_remote_state.q2.outputs.s3_bucket_arn}/"]
+      values = ["${aws_s3_bucket.cloudtrail_bucket.arn}/"]
     }
   }
 }

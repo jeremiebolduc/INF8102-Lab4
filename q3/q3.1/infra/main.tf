@@ -13,6 +13,8 @@ data "terraform_remote_state" "q2" {
   backend = "local"
   config = {
     path = "../../../q2/infra/terraform.tfstate"
+    # Utiliser la ligne ci-dessous si vous souhaitez utiliser le code de q3.3 : 
+    # path = "../../q3.3/infra/terraform.tfstate"
   }
 }
 

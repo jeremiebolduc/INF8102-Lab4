@@ -1,16 +1,5 @@
-data "terraform_remote_state" "q2" {
-  backend = "local"
-  config = {
-    path = "../../../q2/infra/terraform.tfstate"
-  }
-}
-
-locals {
-    q2_bucket_arn = data.terraform_remote_state.q2.outputs.s3_bucket_arn
-}
-
 resource "aws_s3_bucket" "polystudent_s3_back" {
-  bucket = "${data.terraform_remote_state.q2.outputs.s3_bucket_name}-back"
+  bucket = "${var.s3_bucket_name}-back"
 }
 
 resource "aws_s3_bucket_versioning" "polystudent_s3_back_versioning" {
@@ -26,7 +15,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "polystudent_s3_ba
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
-      kms_master_key_id = data.terraform_remote_state.q2.outputs.kms_key_arn
+      kms_master_key_id = aws_kms_key.polystudent_kms.arn
     }
   }
 }
@@ -42,7 +31,7 @@ data "aws_iam_policy_document" "s3_replication" {
     ]
 
     resources = [
-      local.q2_bucket_arn
+      aws_s3_bucket.polystudent_s3.arn
     ]
   }
 
@@ -51,13 +40,13 @@ data "aws_iam_policy_document" "s3_replication" {
     effect = "Allow"
 
     actions = [
-      "s3:GetObjectVersion",
+      "s3:GetObjectVersionForReplication",
       "s3:GetObjectVersionAcl",
       "s3:GetObjectVersionTagging"
     ]
 
     resources = [
-      "${local.q2_bucket_arn}/*"
+      "${aws_s3_bucket.polystudent_s3.arn}/*"
     ]
   }
 
@@ -75,6 +64,58 @@ data "aws_iam_policy_document" "s3_replication" {
     resources = [
       "${aws_s3_bucket.polystudent_s3_back.arn}/*"
     ]
+  }
+
+  statement {
+    sid    = "AllowKMSDecryptFromSource"
+    effect = "Allow"
+
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey"
+    ]
+
+    resources = [
+      aws_kms_key.polystudent_kms.arn
+    ]
+
+    condition {
+      test     = "StringLike"
+      variable = "kms:ViaService"
+      values   = ["s3.*.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:s3:arn"
+      values   = ["${aws_s3_bucket.polystudent_s3.arn}/*"]
+    }
+  }
+
+  statement {
+    sid    = "AllowKMSEncryptToDestination"
+    effect = "Allow"
+
+    actions = [
+      "kms:Encrypt",
+      "kms:GenerateDataKey"
+    ]
+
+    resources = [
+      aws_kms_key.polystudent_kms.arn
+    ]
+
+    condition {
+      test     = "StringLike"
+      variable = "kms:ViaService"
+      values   = ["s3.*.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:s3:arn"
+      values   = ["${aws_s3_bucket.polystudent_s3_back.arn}/*"]
+    }
   }
 }
 
@@ -98,7 +139,7 @@ resource "aws_iam_role_policy" "s3_replication_policy" {
 }
 
 resource "aws_s3_bucket_replication_configuration" "polystudent_s3_replication" {
-  bucket = data.terraform_remote_state.q2.outputs.s3_bucket_name
+  bucket = aws_s3_bucket.polystudent_s3.id
   role   = aws_iam_role.s3_replication_role.arn
   
   depends_on = [
@@ -121,11 +162,9 @@ resource "aws_s3_bucket_replication_configuration" "polystudent_s3_replication" 
       bucket        = aws_s3_bucket.polystudent_s3_back.arn
       storage_class = "STANDARD"
 
-      encryption_configuration {replica_kms_key_id = data.terraform_remote_state.q2.outputs.kms_key_arn}
+      encryption_configuration {replica_kms_key_id = aws_kms_key.polystudent_kms.arn}
     }
-    
+
     delete_marker_replication { status = "Enabled" }
   }
 }
-
-
