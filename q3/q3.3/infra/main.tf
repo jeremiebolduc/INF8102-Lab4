@@ -1,4 +1,11 @@
+# This code replaces Q2. 
+# If you dont want to copy-paste it in the q2 folder, make sure to delete the infrastructure from Q2 and Q3.1 before running Q3.3
+# The bucket from Q2 will have to be deleted manually
+# Make sure that 3.1 points the right "q2" remote state before re-running it. (see q3.1/main.tf)
+# 
 data "aws_iam_policy_document" "kms" {
+
+  # Allow Root permissions, for encryption and replication
   statement {
     sid = "EnableRootPermissions"
 
@@ -11,6 +18,7 @@ data "aws_iam_policy_document" "kms" {
     resources = ["*"]
   }
 
+  # Allow S3 to use the key for KMS bucket encryption
   statement {
     sid = "AllowS3UseOfKey"
 
@@ -28,6 +36,7 @@ data "aws_iam_policy_document" "kms" {
     resources = ["*"]
   }
 
+  # Allows AWS Logs Delivery
   statement {
     sid = "AllowLogsDeliveryToUseKey"
 
@@ -53,6 +62,7 @@ data "aws_iam_policy_document" "kms" {
     }
   }
 
+  # Allows the replicaction role to use the kms key
   statement {
     sid = "AllowReplicationRoleUseOfKey"
 
@@ -73,6 +83,7 @@ data "aws_iam_policy_document" "kms" {
   }
 }
 
+# KMS key to use for both the S3 bucket and the encryption bucket
 resource "aws_kms_key" "polystudent_kms" {
   description             = "KMS key for polystudent S3 bucket"
   enable_key_rotation     = true
@@ -94,6 +105,7 @@ resource "aws_s3_bucket" "polystudent_s3" {
   }
 }
 
+# This for VPC Flow Logs to avoid ACL issues
 resource "aws_s3_bucket_ownership_controls" "this" {
   bucket = aws_s3_bucket.polystudent_s3.id
 
@@ -102,6 +114,7 @@ resource "aws_s3_bucket_ownership_controls" "this" {
   }
 }
 
+# Ensures no public access is allowed to the bucket
 resource "aws_s3_bucket_public_access_block" "this" {
   bucket = aws_s3_bucket.polystudent_s3.id
 
@@ -127,6 +140,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   }
 }
 
+# Enables bucket versioning for accidental overwrites or deletes
 resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.polystudent_s3.id
 

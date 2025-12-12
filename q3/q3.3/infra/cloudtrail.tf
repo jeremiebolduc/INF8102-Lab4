@@ -15,6 +15,7 @@ resource "aws_s3_bucket_versioning" "cloudtrail_bucket_versioning" {
 
 data "aws_caller_identity" "current" {}
 
+#Policy document for the cloudtrail bucket
 data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   statement {
     sid    = "AWSCloudTrailAclCheck"

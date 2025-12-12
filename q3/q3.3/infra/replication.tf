@@ -21,6 +21,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "polystudent_s3_ba
 }
 
 data "aws_iam_policy_document" "s3_replication" {
+  # Allows the replication bucket to read the source bucket
   statement {
     sid    = "AllowReadFromSourceBucket"
     effect = "Allow"
@@ -35,6 +36,7 @@ data "aws_iam_policy_document" "s3_replication" {
     ]
   }
 
+  # Allows the replication bucket to read objects version.
   statement {
     sid    = "AllowReadVersionedObjects"
     effect = "Allow"
@@ -50,6 +52,7 @@ data "aws_iam_policy_document" "s3_replication" {
     ]
   }
 
+  # Allows object replication
   statement {
     sid    = "AllowWriteToDestinationBucket"
     effect = "Allow"
@@ -66,6 +69,7 @@ data "aws_iam_policy_document" "s3_replication" {
     ]
   }
 
+  # Allows decrpytion from kms key
   statement {
     sid    = "AllowKMSDecryptFromSource"
     effect = "Allow"
@@ -92,6 +96,7 @@ data "aws_iam_policy_document" "s3_replication" {
     }
   }
 
+  # Allows encryption
   statement {
     sid    = "AllowKMSEncryptToDestination"
     effect = "Allow"
@@ -147,11 +152,13 @@ resource "aws_s3_bucket_replication_configuration" "polystudent_s3_replication" 
     aws_s3_bucket_versioning.polystudent_s3_back_versioning
     ]
 
+  # All objects from the source bucket will be replicated
   rule {
     id     = "replicate-all-objects"
     status = "Enabled"
     filter {}
 
+    # Allows replication of encrpyted objects
     source_selection_criteria {
       sse_kms_encrypted_objects {
         status = "Enabled"
